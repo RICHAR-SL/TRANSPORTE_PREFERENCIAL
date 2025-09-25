@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 # Configurar matplotlib para evitar problemas
 plt.ioff()  # Turn off interactive mode
 
-BASE_DIR = r"D:\Richard\preferencia_transporte_estudiante\data"
+BASE_DIR = os.path.join(os.path.dirname(__file__), "data")
+
 CSV_PATH = os.path.join(BASE_DIR, "respuestas_datos.csv")
 
 COLUMNS = [
@@ -405,5 +406,5 @@ def api_chart(chart_type):
 if __name__ == "__main__":
     print("Iniciando aplicación Flask...")
     print(f"Directorio de datos: {BASE_DIR}")
-    print(f"Archivo CSV: {CSV_PATH}")
+    print(f"Archivo CSV: {CSV_PATH}")  
     app.run(debug=True, host='127.0.0.1', port=5000)
