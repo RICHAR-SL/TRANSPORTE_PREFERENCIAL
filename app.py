@@ -13,7 +13,10 @@ survey_data = []
 
 # Credenciales de login
 USERS = {
-    'admin': 'senati2025'
+    'admin': 'senati2025',
+    'director': 'director123',
+    'coordinador': 'coord2025',
+    'profesor': 'profe456'
 }
 
 # Decorador para proteger rutas
