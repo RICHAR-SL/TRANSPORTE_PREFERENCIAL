@@ -126,27 +126,13 @@ function addTableRow(data) {
 }
 
 function saveDataToLocalStorage() {
-    const data = {
-        surveyData,
-        timeData,
-        totalResponses,
-        webResponses,
-        chatbotResponses
-    };
-    localStorage.setItem('transportSurveyData', JSON.stringify(data));
+    // Datos se mantienen en memoria durante la sesión
+    // No usamos localStorage en producción
+    console.log('Datos guardados en memoria');
 }
 
 function loadDataFromLocalStorage() {
-    const saved = localStorage.getItem('transportSurveyData');
-    if (saved) {
-        const data = JSON.parse(saved);
-        surveyData = data.surveyData;
-        timeData = data.timeData;
-        totalResponses = data.totalResponses;
-        webResponses = data.webResponses;
-        chatbotResponses = data.chatbotResponses;
-        return true;
-    }
+    // En producción los datos se cargan desde el servidor
     return false;
 }
 
