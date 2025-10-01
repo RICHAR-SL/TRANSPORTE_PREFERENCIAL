@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENATI Intranet - Sistema de Encuestas de Transporte</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">SI</div>
+                <div>
+                    <div class="header-title">SENATI Intranet</div>
+                    <div class="header-subtitle">Sistema de Encuestas de Transporte Estudiantil</div>
+                </div>
+            </div>
+            <div class="participants-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01.99L14 10l-1-1h-1v6h1l1.5-1.5L16 18h4zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 2C5.01 8 3 9.79 3 12v8h8v-8c0-2.21-2.01-4-4.5-4z"/>
+                </svg>
+                <span id="participantsCount">6 Participantes</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <div class="nav-tabs-content">
+            <a href="#" class="nav-tab active">Dashboard</a>
+        </div>
+    </nav>
+
+    <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+
+    <main class="container">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard Principal</h1>
+            <p class="page-subtitle">Análisis de datos de transporte estudiantil - Última actualización: hoy</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Total Participantes</span>
+                    <div class="metric-icon blue"></div>
+                </div>
+                <div class="metric-value" id="totalParticipants">6</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Respuestas Web</span>
+                    <div class="metric-icon green"></div>
+                </div>
+                <div class="metric-value" id="webResponses">4</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Respuestas Chatbot</span>
+                    <div class="metric-icon purple"></div>
+                </div>
+                <div class="metric-value" id="chatbotResponses">2</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Tiempo Promedio</span>
+                    <div class="metric-icon orange"></div>
+                </div>
+                <div class="metric-value" id="avgTime">38 min</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="chart-card">
+                <h2 class="card-title">Métodos de Transporte</h2>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h2 class="card-title">Tiempo de Viaje por Ubicación</h2>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="form-card">
+                <h2 class="card-title">Registro de Nueva Encuesta</h2>
+                <form id="transportSurvey">
+                    <div class="form-group">
+                        <label class="form-label" for="studentName">Nombre Completo</label>
+                        <input type="text" id="studentName" name="studentName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="studentLocation">Ubicación de Residencia</label>
+                        <select id="studentLocation" name="studentLocation" class="form-select" required>
+                            <option value="">Seleccionar ubicación...</option>
+                            <option value="Huancayo">Huancayo</option>
+                            <option value="Jauja">Jauja</option>
+                            <option value="Chupaca">Chupaca</option>
+                            <option value="Sicaya">Sicaya</option>
+                            <option value="Orcotuna">Orcotuna</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Medio de Transporte Principal</label>
+                        <div class="transport-options">
+                            <div class="transport-option">
+                                <input type="radio" id="bus" name="transport" value="bus">
+                                <label for="bus">Bus</label>
+                            </div>
+                            <div class="transport-option">
+                                <input type="radio" id="auto" name="transport" value="auto">
+                                <label for="auto">Auto</label>
+                            </div>
+                            <div class="transport-option">
+                                <input type="radio" id="bicicleta" name="transport" value="bicicleta">
+                                <label for="bicicleta">Bicicleta</label>
+                            </div>
+                            <div class="transport-option">
+                                <input type="radio" id="caminata" name="transport" value="caminata">
+                                <label for="caminata">Caminata</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tiempo de Viaje al Estudio (minutos)</label>
+                        <input type="number" id="travelMinutes" name="travelMinutes" class="form-input" min="1" max="300" placeholder="Ej: 45" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Registrar Encuesta</button>
+                    <div class="success-message" id="successMessage">
+                        Encuesta registrada correctamente en el sistema
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h2 class="table-title">Registro de Respuestas Recientes</h2>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ubicación</th>
+                            <th>Transporte</th>
+                            <th>Tiempo Viaje</th>
+                            <th>Fuente</th>
+                            <th>Fecha Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody id="responsesTable">
+                        <tr>
+                            <td>Ana García Mendoza</td>
+                            <td>Huancayo</td>
+                            <td><span class="status-badge badge-bus">Bus</span></td>
+                            <td>45 min</td>
+                            <td><span class="status-badge source-web">Web</span></td>
+                            <td>23/09/2025 14:30</td>
+                        </tr>
+                        <tr>
+                            <td>Carlos López Vargas</td>
+                            <td>Jauja</td>
+                            <td><span class="status-badge badge-auto">Auto</span></td>
+                            <td>30 min</td>
+                            <td><span class="status-badge source-chatbot">Chatbot</span></td>
+                            <td>23/09/2025 13:45</td>
+                        </tr>
+                        <tr>
+                            <td>María Quispe Flores</td>
+                            <td>Chupaca</td>
+                            <td><span class="status-badge badge-bus">Bus</span></td>
+                            <td>60 min</td>
+                            <td><span class="status-badge source-web">Web</span></td>
+                            <td>23/09/2025 12:20</td>
+                        </tr>
+                        <tr>
+                            <td>José Mendoza Rojas</td>
+                            <td>Sicaya</td>
+                            <td><span class="status-badge badge-bicicleta">Bicicleta</span></td>
+                            <td>25 min</td>
+                            <td><span class="status-badge source-web">Web</span></td>
+                            <td>23/09/2025 11:10</td>
+                        </tr>
+                        <tr>
+                            <td>Rosa Flores Huamán</td>
+                            <td>Orcotuna</td>
+                            <td><span class="status-badge badge-caminata">Caminata</span></td>
+                            <td>20 min</td>
+                            <td><span class="status-badge source-chatbot">Chatbot</span></td>
+                            <td>23/09/2025 10:55</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        (function (d, t) {
+            var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            v.onload = function () {
+                window.voiceflow.chat.load({
+                    verify: { projectID: '68cdaac4b16e3e003d3f0e43' },
+                    url: 'https://general-runtime.voiceflow.com',
+                    versionID: 'production',
+                    voice: { url: 'https://runtime-api.voiceflow.com' }
+                });
+            };
+            v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+            v.type = "text/javascript";
+            s.parentNode.insertBefore(v, s);
+        })(document, 'script');
+    </script>
+</body>
+</html>
