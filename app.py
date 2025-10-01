@@ -4,12 +4,67 @@ import csv
 import io
 from datetime import datetime
 from functools import wraps
+import gspread
+from google.oauth2.service_account import Credentials
+import os
 
 app = Flask(__name__)
 app.secret_key = 'senati_secret_key_2025'
 
 # Datos en memoria para almacenar las respuestas
 survey_data = []
+
+# Configuración de Google Sheets
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SPREADSHEET_ID = '1oO1sB8u0Ou2VsZXimUEgBgK1ejZnFA-HNcfJfT7JaNI'
+
+def get_google_sheet():
+    """Conectar con Google Sheets"""
+    try:
+        # En producción, las credenciales vienen de variables de entorno
+        if os.path.exists('credentials.json'):
+            creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+        else:
+            # Para Render: usa variable de entorno
+            creds_dict = json.loads(os.environ.get('GOOGLE_CREDENTIALS', '{}'))
+            creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+        
+        client = gspread.authorize(creds)
+        sheet = client.open_by_key(SPREADSHEET_ID).sheet1
+        return sheet
+    except Exception as e:
+        print(f"Error conectando con Google Sheets: {e}")
+        return None
+
+def save_to_google_sheets(data):
+    """Guardar datos en Google Sheets"""
+    try:
+        sheet = get_google_sheet()
+        if sheet is None:
+            return False
+        
+        # Obtener el último ID
+        all_values = sheet.get_all_values()
+        last_id = len(all_values) if len(all_values) > 1 else 1
+        
+        # Preparar fila
+        row = [
+            last_id,  # ID
+            data.get('nombre1', data.get('studentName', '')),  # Nombre
+            data.get('edad', ''),  # Edad
+            data.get('lugar', data.get('studentLocation', '')),  # Ubicación
+            data.get('transporte', data.get('transport', '')),  # Transporte
+            'SENATI',  # Centro (fijo)
+            data.get('tiempo_llegada', data.get('travelMinutes', ''))  # Minutos
+        ]
+        
+        # Agregar fila
+        sheet.append_row(row)
+        print(f"✅ Datos guardados en Google Sheets: {row}")
+        return True
+    except Exception as e:
+        print(f"❌ Error guardando en Google Sheets: {e}")
+        return False
 
 # Credenciales de login
 USERS = {

@@ -160,6 +160,27 @@ function submitSurvey() {
         return;
     }
 
+    // Enviar datos al servidor para guardar en Google Sheets
+    fetch('/api/survey', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            studentName: name,
+            studentLocation: location,
+            transport: transport,
+            travelMinutes: minutes,
+            source: 'web'
+        })
+    }).then(response => response.json())
+      .then(data => {
+          console.log('Datos guardados:', data);
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+
     surveyData[transport]++;
     timeData[location] = minutes;
     totalResponses++;
