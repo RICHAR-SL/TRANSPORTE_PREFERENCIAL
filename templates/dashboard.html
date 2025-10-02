@@ -204,16 +204,19 @@
       var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
       v.onload = function() {
         window.voiceflow.chat.load({
-          verify: { projectID: '68dea49ff10b7f96bd93e030' }, // ✅ usa solo un ID
+          verify: { projectID: '68dea49ff10b7f96bd93e030' },
           url: 'https://general-runtime.voiceflow.com',
           versionID: 'production',
-          voice: { url: "https://runtime-api.voiceflow.com" }
+          voice: {
+            url: "https://runtime-api.voiceflow.com"
+          }
         });
-      } 
+      }
       v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; 
       v.type = "text/javascript"; 
       s.parentNode.insertBefore(v, s);
   })(document, 'script');
 </script>
+
 </body>
 </html>
